@@ -1,0 +1,72 @@
+package ru.geekbrains.api.lesson3.hw.calculator;
+
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Scanner;
+
+class CalculatorRom {
+    public double calculate(char op, double a, double b) {
+        // Напишите свое решение ниже
+        double result = 0;
+
+        switch (op) {
+            case '+':
+                result = a + b;
+                break;
+            case '-':
+                result = a - b;
+                break;
+            case '*':
+                result = a * b;
+                break;
+            case '/':
+                if (b == 0) {
+                    System.out.println("ERROR");
+                    result = -1;
+                    break;
+                }
+                result = a / b;
+                break;
+            default:
+                System.out.println("Некорректный оператор: " + op);
+                result = -1;
+        }
+        return result;
+    }
+}
+
+// Не удаляйте этот класс - он нужен для вывода результатов на экран и проверки
+class Printer {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();
+        String[] numberStrs = line.split("[+\\-*/]");
+        while (true) {
+
+               if (numberStrs.length > 2) {
+                System.out.println("Вы ввели больше одной операции !");
+                break;
+            }
+
+
+// дописать начинается ли строка с числа или с римской цифры
+            // выделить из строки оператор
+
+            double a =  Double.parseDouble(numberStrs[0]);
+            char op = ' ';
+            double b = Double.parseDouble(numberStrs[1]);
+            op = '+';
+
+            CalculatorRom calculator = new CalculatorRom();
+            double result = calculator.calculate(op, a, b);
+            System.out.println(result);
+            break;
+        }
+    }
+}
+
+
