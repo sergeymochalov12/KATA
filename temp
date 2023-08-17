@@ -1,16 +1,43 @@
-package ru.geekbrains.api.lesson3.hw.calculator;
+package ru.geekbrains.api.kata.calculator;
 
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
-class CalculatorRom {
-    public double calculate(char op, double a, double b) {
-        // Напишите свое решение ниже
-        double result = 0;
+public class Main {
 
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();// вводим строку
+        String result = calc(line);
+        System.out.println(result);
+
+    }
+
+    public static String calc(String line) {
+        String res = "";
+        line = line.replaceAll("\\s", ""); // убираем пробелы из начальной строки
+
+        if (Character.isDigit(line.charAt(0))) {
+            return forArabic(line); // если начинается с цифры то метод для арабских цифр
+        }
+        else return calculateRoman(line);
+    }
+
+    public static String forArabic(String line) {
+        // Метод для арабских цифр
+        String[] numberStrs = line.split("[+\\-*/]"); // собираем массив из строки
+
+        if (numberStrs.length > 2) { // если длина массива больше 2 то значит введено больше 1й опреации
+            System.out.println("Вы ввели больше одной операции !");
+            return "throws Exception";
+        }
+
+        double a = Double.parseDouble(numberStrs[0]);
+        char op = line.charAt(numberStrs[0].length());
+        double b = Double.parseDouble(numberStrs[1]);
+        double result = 0;
         switch (op) {
             case '+':
                 result = a + b;
@@ -33,40 +60,76 @@ class CalculatorRom {
                 System.out.println("Некорректный оператор: " + op);
                 result = -1;
         }
-        return result;
+        return "" + result;
     }
-}
-
-// Не удаляйте этот класс - он нужен для вывода результатов на экран и проверки
-class Printer {
-
-    public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
-        String line = scanner.nextLine();
-        String[] numberStrs = line.split("[+\\-*/]");
-        while (true) {
-
-               if (numberStrs.length > 2) {
-                System.out.println("Вы ввели больше одной операции !");
-                break;
-            }
 
 
-// дописать начинается ли строка с числа или с римской цифры
-            // выделить из строки оператор
+// римский калькулятор
+//public class RomanCalculator {
+    // public static void main(String[] args) {
+       // String romanNumeral1 = "XII";
+        //String romanNumeral2 = "IV";
+        //char operator = '+';
 
-            double a =  Double.parseDouble(numberStrs[0]);
-            char op = ' ';
-            double b = Double.parseDouble(numberStrs[1]);
-            op = '+';
+        //int result = calculate(romanNumeral1, romanNumeral2, operator);
+        //String resultRoman = intToRoman(result);
 
-            CalculatorRom calculator = new CalculatorRom();
-            double result = calculator.calculate(op, a, b);
-            System.out.println(result);
-            break;
+        //System.out.println("Result: " + resultRoman);
+   // }
+
+    public static String calculateRoman(String line) {
+        String[] numberStrs = line.split("[+\\-*/]"); // собираем массив из строки
+        int num1 = romanToInt(numberStrs[0]);
+        int num2 = romanToInt(numberStrs[1]);
+        char op = line.charAt(numberStrs[0].length());// выискиваем в строке оператор
+
+        switch (op) {
+            case '+':
+                return "" + (num1 + num2);
+            case '-':
+                return ""+ (num1 - num2);
+            case '*':
+                return "" +(num1 * num2);
+            case '/':
+                return "" +(num1 / num2);
+            default:
+                throw new IllegalArgumentException("Unsupported operator: " + op);
         }
     }
-}
 
+    public static int romanToInt(String roman) {
+        Map<Character, Integer> romanToDecimal = new HashMap<>();
+        romanToDecimal.put('I', 1);
+        romanToDecimal.put('V', 5);
+        romanToDecimal.put('X', 10);
+        romanToDecimal.put('L', 50);
+        romanToDecimal.put('C', 100);
+        romanToDecimal.put('D', 500);
+        romanToDecimal.put('M', 1000);
+
+        int result = 0;
+        int prevValue = 0;
+
+        for (int i = roman.length() - 1; i >= 0; i--) {
+            int currentValue = romanToDecimal.get(roman.charAt(i));
+            if (currentValue < prevValue) {
+                result -= currentValue;
+            } else {
+                result += currentValue;
+            }
+            prevValue = currentValue;
+        }
+
+        return result;
+    }
+
+    public static String intToRoman(int num) {
+        String[] thousands = {"", "M", "MM", "MMM"};
+        String[] hundreds = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        String[] tens = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        String[] ones = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+
+        return thousands[num / 1000] + hundreds[(num % 1000) / 100] + tens[(num % 100) / 10] + ones[num % 10];
+    }
+}
 
